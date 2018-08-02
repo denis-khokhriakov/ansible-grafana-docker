@@ -1,0 +1,46 @@
+---
+- name: Ensure grafana configuration directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ grafana_conf_dir }}"
+    - "{{ grafana_conf_dir }}/datasources"
+    - "{{ grafana_conf_dir }}/provisioning"
+    - "{{ grafana_conf_dir }}/provisioning/datasources"
+
+- name: Create grafana main configuration file
+  template:
+    src: grafana.ini.j2
+    dest: "{{ grafana_conf_dir }}/grafana.ini"
+    owner: root
+    group: root
+    mode: 0600
+  no_log: true
+  notify: restart grafana
+
+- name: Create grafana LDAP configuration file
+  template:
+    src: ldap.toml.j2
+    dest: "{{ grafana_auth.ldap.config_file | default('{{ grafana_conf_dir }}/ldap.toml') }}"
+    owner: root
+    group: root
+    mode: 0600
+  when:
+    - "'ldap' in grafana_auth"
+    - "'enabled' not in grafana_auth.ldap or grafana_auth.ldap.enabled"
+  no_log: true
+  notify: restart grafana
+
+- name: Create grafana directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "root"
+    group: "root"
+  with_items:
+    - "{{ grafana_logs_dir }}"
+    - "{{ grafana_data_dir }}"
+    - "{{ grafana_data_dir }}/dashboards"
+    - "{{ grafana_data_dir }}/plugins"

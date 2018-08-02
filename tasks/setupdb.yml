@@ -1,0 +1,22 @@
+---
+- name: Run database container
+  docker_container:
+    name: postgres
+    state: started
+    restart_policy: unless-stopped
+    image: library/postgres:9.6
+    network_mode: host
+    log_driver: json-file
+    ulimits: "nofile:262144:262144"
+    volumes: "{{ postgres_data_dir }}:/var/lib/postgresql/data"
+
+- name: Wait for DB up and running
+  wait_for:
+    port: "5432"
+
+- name: Create database for grafana
+  postgresql_db:
+    name: grafana
+    owner: postgres
+    login_host: "{{ grafana_address }}"
+    login_user: postgres

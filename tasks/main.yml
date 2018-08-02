@@ -1,0 +1,44 @@
+---
+- include: preflight.yml
+  tags:
+    - always
+
+- include: configure.yml
+  tags:
+    - configure
+
+- include: plugins.yml
+  when: grafana_plugins != []
+  tags:
+    - configure
+
+- include: api_keys.yml
+  when: grafana_api_keys | length > 0
+  tags:
+    - configure
+
+- include: datasources.yml
+  when: grafana_datasources != []
+  tags:
+    - configure
+    - datasources
+
+- include: notifications.yml
+  when: grafana_alert_notifications | length > 0
+  tags:
+    - configure
+    - notifications
+
+- include: dashboards.yml
+  when: grafana_dashboards | length > 0
+  tags:
+    - configure
+    - dashboards
+
+- import_tasks: setupdb.yml
+  tags: 
+    - setupdb
+
+- include: install.yml
+  tags:
+    - install

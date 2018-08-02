@@ -1,0 +1,4 @@
+---
+- name: restart grafana
+  become: true
+  command: docker restart grafana

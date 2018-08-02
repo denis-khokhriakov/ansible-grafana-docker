@@ -1,0 +1,16 @@
+- name: Install Grafana
+  vars:
+    volumes:
+      - "/etc/grafana:/etc/grafana:ro"
+      - "{{ grafana_logs_dir }}:/var/log/grafana"
+      - "{{ grafana_data_dir }}:/var/lib/grafana"
+  docker_container:
+    name: grafana
+    state: started
+    restart_policy: unless-stopped
+    image: "grafana/grafana:{{ grafana_version }}"
+    user: root
+    network_mode: host
+    log_driver: none
+    ulimits: "nofile:262144:262144"
+    volumes: "{{ volumes }}"
