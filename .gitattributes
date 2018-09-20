@@ -1,0 +1,2 @@
+*.ccfm filter=lfs diff=lfs merge=lfs -text
+*.vdm filter=lfs diff=lfs merge=lfs -text
